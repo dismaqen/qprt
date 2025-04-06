@@ -1,25 +1,25 @@
-name: Auto Adsterra Bot
+name: System Loop
 
 on:
-  schedule:
-    - cron: '0 */5 * * *'  # Restart tiap 5 jam
   workflow_dispatch:
+  schedule:
+    - cron: '0 */5 * * *' # jalan tiap 5 jam
 
 jobs:
-  run:
+  run-bot:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout repo
         uses: actions/checkout@v3
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '20'
 
       - name: Install dependencies
         run: npm install
 
-      - name: Start Bot
+      - name: Start bot
         run: node index.js
