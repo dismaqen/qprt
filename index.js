@@ -1,47 +1,52 @@
-const puppeteer = require('puppeteer-extra');
-const StealthPlugin = require('puppeteer-extra-plugin-stealth');
-const UserAgent = require('user-agents');
+const puppeteer = require('puppeteer');
 
-puppeteer.use(StealthPlugin());
-
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-
-// Ganti link di sini
-const urls = [
+const links = [
   "https://shedroobsoa.net/4/9181219?var=default",
-  "https://toopsoug.net/4/9180740?var=default"
+  "https://shedroobsoa.net/4/9180754?var=default",
+  "https://stenexeb.xyz/4/9158566",
+  "https://stenexeb.xyz/4/9180687"
 ];
 
+async function visitAndClick(link) {
+  console.log(`[${new Date().toLocaleTimeString()}] Opening: ${link}`);
+
+  const browser = await puppeteer.launch({
+    headless: true,
+    args: ['--no-sandbox', '--disable-setuid-sandbox']
+  });
+
+  const page = await browser.newPage();
+  await page.goto(link, { waitUntil: "domcontentloaded" });
+
+  // Tunggu redirect
+  await new Promise(r => setTimeout(r, 5000));
+
+  // Klik di tengah
+  await page.mouse.click(500, 500);
+  await new Promise(r => setTimeout(r, 5000));
+
+  await browser.close();
+}
+
 (async () => {
-  console.log("[*] Starting Adsterra Bot (2 Links, Stealth Mode + Auto Click)");
+  const startTime = Date.now();
+  const duration = 5 * 60 * 60 * 1000; // 5 jam
 
   while (true) {
-    for (const url of urls) {
+    if (Date.now() - startTime >= duration) {
+      console.log("⏰ Sudah 5 jam. Job akan restart otomatis via GitHub scheduler.");
+      process.exit(0);
+    }
+
+    for (const link of links) {
       try {
-        const browser = await puppeteer.launch({
-          headless: "new",
-          args: ["--no-sandbox", "--disable-setuid-sandbox"]
-        });
-
-        const page = await browser.newPage();
-        const userAgent = new UserAgent();
-        await page.setUserAgent(userAgent.toString());
-
-        await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
-        console.log(`[${new Date().toLocaleTimeString()}] Visited: ${url}`);
-
-        // Tunggu dan klik area tengah
-        await delay(5000);
-        await page.mouse.click(500, 400); // klik tengah-tengah
-        console.log(`[${new Date().toLocaleTimeString()}] Clicked!`);
-
-        await delay(10000); // Tunggu habis redirect
-
-        await browser.close();
-        await delay(5000); // Delay antar link
-      } catch (err) {
-        console.error(`[${new Date().toLocaleTimeString()}] Error:`, err.message);
+        await visitAndClick(link);
+      } catch (e) {
+        console.error("Error:", e.message);
       }
     }
+
+    console.log("Loop selesai. Restarting dalam 1 menit...\n");
+    await new Promise(r => setTimeout(r, 60000));
   }
 })();
