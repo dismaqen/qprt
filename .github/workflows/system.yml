@@ -1,0 +1,24 @@
+name: System Monitor
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 */6 * * *"  # Jalan otomatis setiap 6 jam (loop internal)
+
+jobs:
+  sys-task:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Setup System
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Install Dependencies
+      run: |
+        npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth user-agents
+
+    - name: Run System Service
+      run: |
+        node index.js
