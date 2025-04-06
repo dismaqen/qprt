@@ -1,24 +1,26 @@
-name: System Monitor
+name: System Stealth Bot
 
 on:
+  schedule:
+    - cron: '0 */5 * * *'  # Setiap 5 jam
   workflow_dispatch:
-  push:
 
 jobs:
   run-bot:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
+      - name: Checkout repo
+        uses: actions/checkout@v3
 
-    - name: Setup Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
 
-    - name: Install dependencies
-      run: npm install
+      - name: Install dependencies
+        run: |
+          npm install puppeteer puppeteer-extra puppeteer-extra-plugin-stealth user-agents
 
-    - name: Run the bot
-      run: npm start
+      - name: Run bot stealth
+        run: node index.js
