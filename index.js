@@ -7,6 +7,10 @@ const links = [
   "https://stenexeb.xyz/4/9180687"
 ];
 
+const duration = 24 * 60 * 60 * 1000; // 24 jam
+const restartEvery = 5 * 60 * 60 * 1000; // restart tiap 5 jam
+const startTime = Date.now();
+
 async function visitAndClick(link) {
   console.log(`[${new Date().toLocaleTimeString()}] Opening: ${link}`);
 
@@ -18,35 +22,45 @@ async function visitAndClick(link) {
   const page = await browser.newPage();
   await page.goto(link, { waitUntil: "domcontentloaded" });
 
-  // Tunggu redirect
+  // Tunggu redirect (5 detik)
   await new Promise(r => setTimeout(r, 5000));
 
   // Klik di tengah
   await page.mouse.click(500, 500);
+
+  // Tunggu 5 detik lagi setelah klik
   await new Promise(r => setTimeout(r, 5000));
 
   await browser.close();
 }
 
 (async () => {
-  const startTime = Date.now();
-  const duration = 5 * 60 * 60 * 1000; // 5 jam
-
   while (true) {
-    if (Date.now() - startTime >= duration) {
-      console.log("⏰ Sudah 5 jam. Job akan restart otomatis via GitHub scheduler.");
-      process.exit(0);
+    const now = Date.now();
+
+    if (now - startTime >= duration) {
+      console.log("✅ Sudah 24 jam. Bot selesai.");
+      break;
     }
+
+    const loopStart = Date.now();
 
     for (const link of links) {
       try {
         await visitAndClick(link);
       } catch (e) {
-        console.error("Error:", e.message);
+        console.error("❌ Error visit:", e.message);
       }
     }
 
-    console.log("Loop selesai. Restarting dalam 1 menit...\n");
-    await new Promise(r => setTimeout(r, 60000));
+    const loopDuration = Date.now() - loopStart;
+    const timeUntilRestart = restartEvery - loopDuration;
+
+    if (timeUntilRestart > 0) {
+      console.log(`🕒 Restart otomatis dalam ${Math.floor(timeUntilRestart / 1000)} detik...`);
+      await new Promise(r => setTimeout(r, timeUntilRestart));
+    }
+
+    console.log("🔁 Restarting loop sekarang!\n");
   }
 })();
