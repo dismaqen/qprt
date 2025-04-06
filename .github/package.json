@@ -1,15 +1,14 @@
 {
   "name": "adsterra-stealth-bot",
   "version": "1.0.0",
-  "description": "Auto visit Adsterra bot with stealth & auto-restart",
+  "description": "Adsterra bot stealth anti-banned + auto click",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
   "dependencies": {
-    "axios": "^1.6.7",
     "puppeteer-extra": "^3.3.4",
     "puppeteer-extra-plugin-stealth": "^2.11.1",
-    "user-agents": "^1.0.138"
+    "user-agents": "^1.0.128"
   }
 }
