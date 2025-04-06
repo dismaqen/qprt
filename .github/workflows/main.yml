@@ -1,20 +1,18 @@
 name: System Monitor
 
 on:
-  push:
   workflow_dispatch:
-  schedule:
-    - cron: "0 */6 * * *"  # jalan tiap 6 jam
+  push:
 
 jobs:
-  stealth-bot:
+  run-bot:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout repo
       uses: actions/checkout@v3
 
-    - name: Install Node.js
+    - name: Setup Node.js
       uses: actions/setup-node@v3
       with:
         node-version: '18'
@@ -22,5 +20,5 @@ jobs:
     - name: Install dependencies
       run: npm install
 
-    - name: Start bot
+    - name: Run the bot
       run: npm start
