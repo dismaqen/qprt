@@ -7,28 +7,25 @@ const links = [
   "https://stenexeb.xyz/4/9180687"
 ];
 
-const duration = 24 * 60 * 60 * 1000; // 24 jam
-const restartEvery = 5 * 60 * 60 * 1000; // restart tiap 5 jam
 const startTime = Date.now();
+const duration = 24 * 60 * 60 * 1000; // 24 jam
 
 async function visitAndClick(link) {
   console.log(`[${new Date().toLocaleTimeString()}] Opening: ${link}`);
 
   const browser = await puppeteer.launch({
-    headless: true,
+    headless: "new", // Pakai headless Chrome versi terbaru
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   });
 
   const page = await browser.newPage();
   await page.goto(link, { waitUntil: "domcontentloaded" });
 
-  // Tunggu redirect (5 detik)
+  // Tunggu redirect
   await new Promise(r => setTimeout(r, 5000));
 
   // Klik di tengah
   await page.mouse.click(500, 500);
-
-  // Tunggu 5 detik lagi setelah klik
   await new Promise(r => setTimeout(r, 5000));
 
   await browser.close();
@@ -36,31 +33,20 @@ async function visitAndClick(link) {
 
 (async () => {
   while (true) {
-    const now = Date.now();
-
-    if (now - startTime >= duration) {
+    if (Date.now() - startTime >= duration) {
       console.log("✅ Sudah 24 jam. Bot selesai.");
-      break;
+      process.exit(0);
     }
-
-    const loopStart = Date.now();
 
     for (const link of links) {
       try {
         await visitAndClick(link);
       } catch (e) {
-        console.error("❌ Error visit:", e.message);
+        console.error("❌ Error:", e.message);
       }
     }
 
-    const loopDuration = Date.now() - loopStart;
-    const timeUntilRestart = restartEvery - loopDuration;
-
-    if (timeUntilRestart > 0) {
-      console.log(`🕒 Restart otomatis dalam ${Math.floor(timeUntilRestart / 1000)} detik...`);
-      await new Promise(r => setTimeout(r, timeUntilRestart));
-    }
-
-    console.log("🔁 Restarting loop sekarang!\n");
+    // Langsung lanjut ke loop berikutnya tanpa nunggu
+    console.log("🔁 Loop ulang...\n");
   }
 })();
