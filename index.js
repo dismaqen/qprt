@@ -1,51 +1,60 @@
 const puppeteer = require('puppeteer');
+const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
 
-(async () => {
-  while (true) {
-    const browser = await puppeteer.launch({
-      headless: true, // <-- ini bikin browser gak kelihatan
-      args: ['--no-sandbox', '--disable-setuid-sandbox']
+// Daftar link Adsterra
+const links = [
+    "https://shedroobsoa.net/4/9181219?var=default",
+    "https://shedroobsoa.net/4/9180754?var=default",
+    "https://stenexeb.xyz/4/9158566",
+    "https://stenexeb.xyz/4/9180687"
+];
+
+// Fungsi untuk memeriksa proxy hidup/mati
+async function checkProxy(proxy) {
+    try {
+        const response = await axios.get('https://www.google.com', {
+            proxy: {
+                host: proxy.host,
+                port: proxy.port
+            },
+            timeout: 5000
+        });
+        return response.status === 200;
+    } catch (error) {
+        console.error(`Proxy mati: ${proxy.host}:${proxy.port}`);
+        return false;
+    }
+}
+
+// Fungsi untuk menggunakan proxy dari daftar dan menunggu halaman
+async function visitLink(browser, link, proxy) {
+    const page = await browser.newPage();
+    await page.setViewport({ width: 1280, height: 800 });
+
+    // Mengatur proxy
+    await page.authenticate({ username: proxy.username, password: proxy.password });
+    await page.setRequestInterception(true);
+
+    page.on('request', (req) => {
+        if (req.resourceType() === 'document') {
+            req.continue();
+        } else {
+            req.abort();
+        }
     });
 
-    const page = await browser.newPage();
-
-    // Daftar link yang akan dikunjungi secara acak
-    const links = [
-      "https://shedroobsoa.net/4/9181219?var=default",
-      "https://shedroobsoa.net/4/9180754?var=default",
-      "https://stenexeb.xyz/4/9158566",
-      "https://stenexeb.xyz/4/9180687"
-    ];
-
-    // Pilih link acak dari daftar
-    const randomLink = links[Math.floor(Math.random() * links.length)];
+    // Stealth settings untuk menghindari deteksi
+    await page.evaluateOnNewDocument(() => {
+        // Menghindari deteksi sebagai bot
+        Object.defineProperty(navigator, 'webdriver', { get: () => undefined });
+        Object.defineProperty(navigator, 'platform', { get: () => 'Win32' });
+        Object.defineProperty(navigator, 'languages', { get: () => ['en-US', 'en'] });
+        Object.defineProperty(navigator, 'plugins', { get: () => [{ name: 'Chrome PDF Plugin' }] });
+    });
 
     try {
-      console.log(`🔗 Mengunjungi link: ${randomLink} (headless)...`);
-      await page.goto(randomLink, {
-        waitUntil: 'networkidle2',
-        timeout: 60000
-      });
-
-      // Tunggu 5 detik biar halaman stabil
-      await new Promise(res => setTimeout(res, 5000));
-
-      // Simulasi klik acak
-      const x = Math.floor(Math.random() * 800) + 100;
-      const y = Math.floor(Math.random() * 400) + 100;
-      await page.mouse.click(x, y);
-      console.log(`🖱️ Klik acak di (${x}, ${y})`);
-
-      // Tunggu 10 detik biar klik ke-record
-      await new Promise(res => setTimeout(res, 10000));
-    } catch (err) {
-      console.error("❌ Error:", err.message);
-    }
-
-    await browser.close();
-
-    const delay = Math.floor(Math.random() * 10000) + 5000;
-    console.log(`⏱️ Tunggu ${delay / 1000} detik sebelum loop lagi...\n`);
-    await new Promise(res => setTimeout(res, delay));
-  }
-})();
+        console.log(`Mengunjungi link: ${link}`);
+        await page.goto(link, { waitUntil: 'domcontentloaded', timeout: 0 });
+        console.log(`Berhasil mengunjungi:
