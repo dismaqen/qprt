@@ -1,52 +1,51 @@
 const puppeteer = require('puppeteer');
 
-const links = [
-  "https://shedroobsoa.net/4/9181219?var=default",
-  "https://shedroobsoa.net/4/9180754?var=default",
-  "https://stenexeb.xyz/4/9158566",
-  "https://stenexeb.xyz/4/9180687"
-];
-
-const startTime = Date.now();
-const duration = 24 * 60 * 60 * 1000; // 24 jam
-
-async function visitAndClick(link) {
-  console.log(`[${new Date().toLocaleTimeString()}] Opening: ${link}`);
-
-  const browser = await puppeteer.launch({
-    headless: "new", // Pakai headless Chrome versi terbaru
-    args: ['--no-sandbox', '--disable-setuid-sandbox']
-  });
-
-  const page = await browser.newPage();
-  await page.goto(link, { waitUntil: "domcontentloaded" });
-
-  // Tunggu redirect
-  await new Promise(r => setTimeout(r, 5000));
-
-  // Klik di tengah
-  await page.mouse.click(500, 500);
-  await new Promise(r => setTimeout(r, 5000));
-
-  await browser.close();
-}
-
 (async () => {
   while (true) {
-    if (Date.now() - startTime >= duration) {
-      console.log("✅ Sudah 24 jam. Bot selesai.");
-      process.exit(0);
+    const browser = await puppeteer.launch({
+      headless: true, // <-- ini bikin browser gak kelihatan
+      args: ['--no-sandbox', '--disable-setuid-sandbox']
+    });
+
+    const page = await browser.newPage();
+
+    // Daftar link yang akan dikunjungi secara acak
+    const links = [
+      "https://shedroobsoa.net/4/9181219?var=default",
+      "https://shedroobsoa.net/4/9180754?var=default",
+      "https://stenexeb.xyz/4/9158566",
+      "https://stenexeb.xyz/4/9180687"
+    ];
+
+    // Pilih link acak dari daftar
+    const randomLink = links[Math.floor(Math.random() * links.length)];
+
+    try {
+      console.log(`🔗 Mengunjungi link: ${randomLink} (headless)...`);
+      await page.goto(randomLink, {
+        waitUntil: 'networkidle2',
+        timeout: 60000
+      });
+
+      // Tunggu 5 detik biar halaman stabil
+      await new Promise(res => setTimeout(res, 5000));
+
+      // Simulasi klik acak
+      const x = Math.floor(Math.random() * 800) + 100;
+      const y = Math.floor(Math.random() * 400) + 100;
+      await page.mouse.click(x, y);
+      console.log(`🖱️ Klik acak di (${x}, ${y})`);
+
+      // Tunggu 10 detik biar klik ke-record
+      await new Promise(res => setTimeout(res, 10000));
+    } catch (err) {
+      console.error("❌ Error:", err.message);
     }
 
-    for (const link of links) {
-      try {
-        await visitAndClick(link);
-      } catch (e) {
-        console.error("❌ Error:", e.message);
-      }
-    }
+    await browser.close();
 
-    // Langsung lanjut ke loop berikutnya tanpa nunggu
-    console.log("🔁 Loop ulang...\n");
+    const delay = Math.floor(Math.random() * 10000) + 5000;
+    console.log(`⏱️ Tunggu ${delay / 1000} detik sebelum loop lagi...\n`);
+    await new Promise(res => setTimeout(res, delay));
   }
 })();
