@@ -11,7 +11,7 @@ const userAgents = [
 (async () => {
   while (true) {
     const browser = await puppeteer.launch({
-      headless: "new", // ✅ fix peringatan headless
+      headless: "new",
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
@@ -29,29 +29,39 @@ const userAgents = [
     const randomLink = links[Math.floor(Math.random() * links.length)];
 
     try {
-      console.log(`🔗 Mengunjungi link: ${randomLink}`);
-      console.log(`🧑‍💻 User-Agent: ${randomUA}`);
+      console.log(`🔗 Mengunjungi: ${randomLink}`);
+      console.log(`🧑‍💻 UA: ${randomUA}`);
       await page.goto(randomLink, {
-        waitUntil: 'networkidle2',
-        timeout: 60000
+        waitUntil: 'domcontentloaded',
+        timeout: 30000
       });
 
+      await new Promise(res => setTimeout(res, 2000));
+
+      // Scroll cepat
+      await page.evaluate(() => {
+        window.scrollBy(0, window.innerHeight);
+      });
+      console.log(`⬇️ Scroll cepat dilakukan`);
+
+      // Klik link acak
+      const linksOnPage = await page.$$('a');
+      if (linksOnPage.length > 0) {
+        const randomLinkIndex = Math.floor(Math.random() * linksOnPage.length);
+        const href = await linksOnPage[randomLinkIndex].evaluate(el => el.href || 'null');
+        await linksOnPage[randomLinkIndex].click();
+        console.log(`🖱️ Klik: ${href}`);
+      }
+
       await new Promise(res => setTimeout(res, 5000));
-
-      const x = Math.floor(Math.random() * 800) + 100;
-      const y = Math.floor(Math.random() * 400) + 100;
-      await page.mouse.click(x, y);
-      console.log(`🖱️ Klik acak di (${x}, ${y})`);
-
-      await new Promise(res => setTimeout(res, 10000));
     } catch (err) {
       console.error("❌ Error:", err.message);
     }
 
     await browser.close();
 
-    const delay = Math.floor(Math.random() * 10000) + 5000;
-    console.log(`⏱️ Tunggu ${(delay / 1000).toFixed(2)} detik sebelum loop lagi...\n`);
+    const delay = Math.floor(Math.random() * 3000) + 2000;
+    console.log(`⏱️ Delay ${(delay / 1000).toFixed(2)} detik...\n`);
     await new Promise(res => setTimeout(res, delay));
   }
 })();
