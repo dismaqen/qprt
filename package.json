@@ -1,10 +1,13 @@
 {
-  "name": "adsterra-bot",
+  "name": "bot-cuan-adsterra",
   "version": "1.0.0",
+  "description": "Bot kunjungan otomatis ke link Adsterra dengan spoof User-Agent dan klik acak.",
   "main": "index.js",
   "scripts": {
     "start": "node index.js"
   },
+  "author": "Cuan Mode",
+  "license": "MIT",
   "dependencies": {
     "puppeteer": "^21.3.8"
   }
