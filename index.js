@@ -8,60 +8,70 @@ const userAgents = [
   "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Mobile/15E148 Safari/604.1"
 ];
 
+const targetURL = "https://stenexeb.xyz/4/9158566";
+
+const delay = (ms) => new Promise(res => setTimeout(res, ms));
+
 (async () => {
   while (true) {
     const browser = await puppeteer.launch({
-      headless: "new",
+      headless: false, // biar kelihatan
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
 
     const page = await browser.newPage();
-
-    const randomUA = userAgents[Math.floor(Math.random() * userAgents.length)];
-    await page.setUserAgent(randomUA);
-
-    const links = [
-      "https://shedroobsoa.net/4/9181219?var=default",
-      "https://shedroobsoa.net/4/9180754?var=default",
-      "https://stenexeb.xyz/4/9158566",
-      "https://stenexeb.xyz/4/9180687"
-    ];
-    const randomLink = links[Math.floor(Math.random() * links.length)];
+    const ua = userAgents[Math.floor(Math.random() * userAgents.length)];
+    await page.setUserAgent(ua);
 
     try {
-      console.log(`🔗 Mengunjungi: ${randomLink}`);
-      console.log(`🧑‍💻 UA: ${randomUA}`);
-      await page.goto(randomLink, {
+      console.log(`🔗 Mengunjungi: ${targetURL}`);
+      console.log(`🧑‍💻 UA: ${ua}`);
+      await page.goto(targetURL, {
         waitUntil: 'domcontentloaded',
-        timeout: 30000
+        timeout: 60000
       });
 
-      await new Promise(res => setTimeout(res, 2000));
-
-      // Scroll cepat
-      await page.evaluate(() => {
-        window.scrollBy(0, window.innerHeight);
-      });
-      console.log(`⬇️ Scroll cepat dilakukan`);
-
-      // Klik link acak
-      const linksOnPage = await page.$$('a');
-      if (linksOnPage.length > 0) {
-        const randomLinkIndex = Math.floor(Math.random() * linksOnPage.length);
-        const href = await linksOnPage[randomLinkIndex].evaluate(el => el.href || 'null');
-        await linksOnPage[randomLinkIndex].click();
-        console.log(`🖱️ Klik: ${href}`);
+      // 🕹️ Gerakin mouse random
+      const box = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
+      for (let i = 0; i < 10; i++) {
+        const x = Math.floor(Math.random() * box.width);
+        const y = Math.floor(Math.random() * box.height);
+        await page.mouse.move(x, y);
+        await delay(300);
       }
 
-      await new Promise(res => setTimeout(res, 5000));
+      // ⏳ Tunggu redirect selesai
+      await delay(7000);
+
+      // 🎯 Cari tombol dengan teks
+      const keywords = ["Continue", "Next", "Skip", "Visit"];
+      let clicked = false;
+
+      for (let keyword of keywords) {
+        const button = await page.$x(`//a[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '${keyword.toLowerCase()}')] | //button[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), '${keyword.toLowerCase()}')]`);
+        if (button.length > 0) {
+          await button[0].hover();
+          await delay(1000);
+          await button[0].click();
+          console.log(`✅ Klik tombol: ${keyword}`);
+          clicked = true;
+          break;
+        }
+      }
+
+      if (!clicked) {
+        console.log("❌ Tidak ada tombol yang cocok ditemukan.");
+      }
+
+      await delay(15000); // tunggu habis redirect kedua
+
     } catch (err) {
       console.error("❌ Error:", err.message);
     }
 
     await browser.close();
-
-    const delay = Math.floor(Math.random() * 3000) + 2000;
-    console.log(`⏱️ Delay ${(delay / 1000).toFixed(2)} detik...\n`);
-    await new Promise(res => setTimeout(res, delay));
+    const wait = Math.floor(Math.random() * 7000) + 5000;
+    console.log(`⏱️ Delay ${(wait / 1000).toFixed(2)} detik sebelum loop ulang...\n`);
+    await delay(wait);
   }
 })();
