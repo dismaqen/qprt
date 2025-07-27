@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Auto Klik Vast Ad</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <!-- Inject script iklan -->
+  <script>
+    (function(etftqd){
+      var d = document,
+          s = d.createElement('script'),
+          l = d.scripts[d.scripts.length - 1];
+      s.settings = etftqd || {};
+      s.src = "//probableregret.com/b.XSV/sWdxG/lw0bY_Wxck/WedmN9QuRZNUUlCk/PwTeYZ1qMNzGk/xKN/DpIEt/NjjTUmzJObTKEt0/MFwS";
+      s.async = true;
+      s.referrerPolicy = 'no-referrer-when-downgrade';
+      l.parentNode.insertBefore(s, l);
+    })({});
+  </script>
+
+  <!-- Observer untuk auto klik elemen vast-blocker -->
+  <script>
+    const observer = new MutationObserver(() => {
+      const adLink = document.querySelector('a.vast-blocker[href]');
+      if (adLink) {
+        observer.disconnect();
+        setTimeout(() => {
+          window.location.href = adLink.href;
+        }, 1500); // delay klik, bisa diubah
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  </script>
+</body>
+</html>
