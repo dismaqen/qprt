@@ -1,205 +1,52 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <title>Parent - RTB Link Scanner</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="UTF-8">
+  <title>RTB Iframe + Auto Click Link</title>
   <style>
-    html,body { height:100%; margin:0; font-family:system-ui,Segoe UI,Roboto,Arial; background:#f7f7f7; }
-    .wrap { padding:16px; max-width:980px; margin:20px auto; }
-    .frame-box { background:#fff; border:1px solid #e3e3e3; padding:12px; display:inline-block; }
-    iframe { display:block; width:300px; height:250px; border:0; }
-    pre { background:#111; color:#fff; padding:10px; border-radius:6px; overflow:auto; max-height:220px; }
-    .log { margin-top:12px; font-size:13px; color:#222; }
-    .hint { color:#666; font-size:13px; margin-top:6px; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h3>Parent Page — RTB Link Scanner</h3>
 
-    <div class="frame-box">
-      <!-- Iframe yang kamu berikan (tetap 1:1) -->
-      <iframe
-        data-cbi="1465693"
-        src="https://rtbbtr.com/get/?go=1&amp;data=eyJpbXAiOlt7InNlY3VyZSI6MSwiZXh0Ijp7InRhZ19hYiI6ImEiLCJtdWx0aSI6ZmFsc2UsInVzZXJfa2V5d29yZHMiOiIiLCJpZCI6MTQ5OSwic3BhY2VpZCI6MTQ5OSwidHlwZSI6InBvcCIsImlkem9uZSI6bnVsbCwiYWRfdGFncyI6IktsaWslMkNWYXN0JTJDQWQsIiwibGFiZWxzIjoiNCw1LDYsNyw4LDksNDYsNDcsNTQsNTUsNjEsMTA5IiwiYWxsb3dlZF9sYWJlbHMiOiIiLCJ0aXRsZSI6IiIsInN1YmlkIjoiMTAyOTEzMzc2OCIsInJlZnJlc2giOjUsInV0bTEiOiIiLCJ1dG0yIjoiIiwidXRtNCI6IiIsInNwb3RfaWQiOjE0NjU2OTMsIm11bHRpcGxlIjpmYWxzZSwiaXNfaWZyYW1lIjpmYWxzZSwicmVmZG9tYWluIjoid3d3LmJsb2dnZXIuY29tIiwicGwiOjAsInN0cmF0YWdlbSI6IiIsImd5ciI6MCwiYWNjZWwiOjAsInNzcCI6Mzc1OCwiYnR5cGUiOjAsInYyIjowLCJyY2hhbmdlIjpmYWxzZSwicG9zIjowLCJldmVudF9pZCI6IjNmN2U2MDYzLWUzM2YtNDI2NC1hZGU0LTVkNmZkZGVmYjMyMCIsImFwcHJvdmVkX21haW5zdHJlYW0iOjAsIndsIjowLCJ0ZXN0YWIiOjAsInZlciI6IjYuOTAuMCJ9LCJiYW5uZXIiOnsidyI6MzAwLCJoIjoyNTB9LCJtZXRyaWNzIjp7InRvcGljcyI6W119fV0sInNpdGUiOnsiaWQiOiIxNDY1NjkzIiwiY2F0IjpbIklBQjEiXSwicGFnZSI6Imh0dHBzOi8vdGVzdHRhZHphLmJsb2dzcG90LmNvbS8iLCJjdGlkIjoxfSwiZGV2aWNlIjp7InciOjE1MzYsImgiOjg2NH0sImZwX3BhcmFtcyI6eyJwbHVnaW5zIjpbIlBERiBWaWV3ZXIiLCJDaHJvbWUgUERGIFZpZXdlciIsIkNocm9taXVtIFBERiBWaWV3ZXIiLCJNaWNyb3NvZnQgRWRnZSBQREYgVmlld2VyIiwiV2ViS2l0IGJ1aWx0LWluIFBERiJdLCJsYW5ndWFnZXMiOlsiZW4tVVMiXSwiZm9udHMiOlsiQWdlbmN5IEZCIiwiQ2FsaWJyaSIsIkNlbnR1cnkiLCJDZW50dXJ5IEdvdGhpYyIsIkZyYW5rbGluIEdvdGhpYyIsIkhhZXR0ZW5zY2h3ZWlsZXIiLCJMdWNpZGEgQnJpZ2h0IiwiTHVjaWRhIFNhbnMiLCJNUyBPdXRsb29rIiwiTVMgUmVmZXJlbmNlIFNwZWNpYWx0eSIsIk1TIFVJIEdvdGhpYyIsIk1UIEV4dHJhIiwiTWFybGV0dCIsIk1vbm90eXBlIENvcnNpdmEiLCJQcmlzdGluYSIsIlNlZ29lIFVJIExpZ2h0IiwiWldBZG9iZUYiXSwiZm9udFByZWZlcmVuY2VzIjp7ImRlZmF1bHQiOjExOS40NTAwMDQ1Nzc2MzY3MiwiYXBwbGUiOjExOS40NTAwMDQ1Nzc2MzY3Miwic2VyaWYiOjExOS40NTAwMDQ1Nzc2MzY3Miwic2FucyI6MTE1LjIxMjUwMTUyNTg3ODksIm1vbm8iOjk3LjIxMjUwMTUyNTg3ODksIm1pbiI6Ny40NzQ5OTk5MDQ2MzI1NjgsInN5c3RlbSI6MTE4LjI4NzQ5ODQ3NDEyMTF9LCJwbGF0Zm9ybSI6IldpbjMyIiwiY29sb3JEZXB0aCI6MjQsImRldmljZU1lbW9yeSI6OCwiaGFyZHdhcmVDb25jdXJyZW5jeSI6MTIsImluZGV4ZWREQiI6dHJ1ZSwic2Vzc2lvblN0b3JhZ2UiOnRydWUsImxvY2FsU3RvcmFnZSI6dHJ1ZSwiY29va2llc0VuYWJsZWQiOnRydWUsImNvbG9yR2FtdXQiOiJzcmdiIn0sInVzZXIiOnsiaWQiOiIzY2U1NGU0Mzk5Y2FiNzI1YzczYTc3ZjVjM2I1N2IzYSIsImZwIjoxNTE4ODkyMDUzMTIxNTMzNzAwMCwiZnBfc3RyIjoiMTUxODg5MjA1MzEyMTUzMzg0OTAiLCJ1YV9kYXRhIjp7ImFyY2hpdGVjdHVyZSI6Ing4NiIsImJpdG5lc3MiOiI2NCIsImJyYW5kcyI6W3siYnJhbmQiOiJDaHJvbWl1bSIsInZlcnNpb24iOiIxNDAifSx7ImJyYW5kIjoiTm90PUE/QnJhbmQiLCJ2ZXJzaW9uIjoiMjQifSx7ImJyYW5kIjoiR29vZ2xlIENocm9tZSIsInZlcnNpb24iOiIxNDAifV0sImZ1bGxWZXJzaW9uTGlzdCI6W3siYnJhbmQiOiJDaHJvbWl1bSIsInZlcnNpb24iOiIxNDAuMC43MzM5LjIwOCJ9LHsiYnJhbmQiOiJOb3Q9QT9CcmFuZCIsInZlcnNpb24iOiIyNC4wLjAuMCJ9LHsiYnJhbmQiOiJHb29nbGUgQ2hyb21lIiwidmVyc2lvbiI6IjE0MC4wLjczMzkuMjA4In1dLCJtb2JpbGUiOmZhbHNlLCJtb2RlbCI6IiIsInBsYXRmb3JtIjoiV2luZG93cyIsInBsYXRmb3JtVmVyc2lvbiI6IjE5LjAuMCIsInVhRnVsbFZlcnNpb24iOiIxNDAuMC43MzM5LjIwOCIsIndvdzY0IjpmYWxzZX0sImlzX3dlYnZpZXciOmZhbHNlLCJzb2NpYWxfbmV0d29yayI6IiJ9LCJleHQiOnsiZHQiOjE3NTkxMjYyNTcyMzR9fQ=="
-        name="1465693"
-        allowtransparency="true"
-        frameborder="no"
-        style="padding:0;margin:0;border:0;"
-        scrolling="no"
-      ></iframe>
-    </div>
-
-    <div class="log">
-      <div class="hint">Log aktivitas (console):</div>
-      <pre id="logarea">Ready. Menunggu iframe...</pre>
-    </div>
-  </div>
+  <!-- Iframe untuk load DATA_PARAM -->
+  <iframe id="rtbFrame"></iframe>
 
   <script>
-    (function () {
-      const iframe = document.querySelector('iframe[name="1465693"]');
-      const logEl = document.getElementById('logarea');
+    // === Inject iframe seperti sebelumnya ===
+    const DATA_PARAM = 'eyJpbXAiOlt7InNlY3VyZSI6MSwiZXh0Ijp7InRhZ19hYiI6ImEiLCJtdWx0aSI6ZmFsc2UsInVzZXJfa2V5d29yZHMiOiIiLCJpZCI6MTQ5OSwic3BhY2VpZCI6MTQ5OSwidHlwZSI6InBvcCIsImlkem9uZSI6bnVsbCwiYWRfdGFncyI6IkhhbGFtYW4lMkNJa2xhbiIsImxhYmVscyI6IjQsNSw2LDcsOCw5LDQ2LDQ3LDU0LDU1LDYxLDEwOSIsImFsbG93ZWRfbGFiZWxzIjoiIiwidGl0bGUiOiIiLCJzdWJpZCI6IjEwMjkxMzM3NjgiLCJyZWZyZXNoIjoxLCJ1dG0xIjoiIiwidXRtMiI6IiIsInV0bTQiOiIiLCJzcG90X2lkIjoxNDY1NjkzLCJtdWx0aXBsZSI6ZmFsc2UsImlzX2lmcmFtZSI6ZmFsc2V9LCJiYW5uZXIiOnsidyI6MzAwLCJoIjoyNTB9LCJtZXRyaWNzIjp7InRvcGljcyI6W119fV0sInNpdGUiOnsiaWQiOiIxNDY1NjkzIiwiY2F0IjpbIklBQjEiXSwicGFnZSI6Imh0dHBzOi8vdGVzdHRhZHphLmJsb2dzcG90LmNvbS8iLCJjdGlkIjoxfSwiZGV2aWNlIjp7IndyIjoxNTM2LCJoIjo4NjR9LCJmcF9wYXJhbXMiOnsicGx1Z2lucyI6WyJQREYgVmlld2VyIiwiQ2hyb21lIFBERiBWaWV3ZXIiXX0sInVzZXIiOnsiaWQiOiIzY2U1NGU0Mzk5Y2FiNzI1YzczYTc3ZjVjM2I1N2IzYSJ9LCJleHQiOnsicnQiOjE3NTkxMzUzMTY4NDZ9fQ==';
+    const endpoint = 'https://rtbbtr.com/get/?go=1&data=' + encodeURIComponent(DATA_PARAM);
+    const frame = document.getElementById('rtbFrame');
+    frame.src = endpoint;
 
-      // Ganti origin sesuai domain iframe jika perlu
-      const allowedOrigin = "https://rtbbtr.com";
-
-      function log(...args) {
-        try {
-          console.log(...args);
-          logEl.textContent += "\\n" + args.map(a => (typeof a === 'object' ? JSON.stringify(a) : String(a))).join(' ');
-          logEl.scrollTop = logEl.scrollHeight;
-        } catch (e) { /* ignore */ }
-      }
-
-      // Coba akses same-origin: ambil semua anchor [data-role="link"]
-      function trySameOriginScan() {
-        try {
-          const idoc = iframe.contentWindow.document;
-          if (!idoc) return false;
-          const anchors = idoc.querySelectorAll('a[data-role="link"][href]');
-          if (!anchors || anchors.length === 0) {
-            log('Same-origin: tidak menemukan anchor di iframe saat ini.');
-            return true; // akses diperbolehkan, tapi tidak ada link
-          }
-          anchors.forEach(a => {
-            const href = a.getAttribute('href');
-            if (href) {
-              log('Same-origin: Found link ->', href);
-              handleFoundLink(href, 'same-origin');
-            }
-          });
-          // Pasang observer di dalam dokumen iframe untuk perubahan selanjutnya
-          try {
-            const mo = new iframe.contentWindow.MutationObserver(() => {
-              log('Same-origin: mutation detected, rescan.');
-              trySameOriginScan();
-            });
-            mo.observe(iframe.contentWindow.document.body, { childList: true, subtree: true });
-            log('Same-origin: observer aktif di iframe.');
-          } catch (e) {
-            // beberapa dokumen mungkin tidak punya body atau tidak memungkinkan observer
-            log('Same-origin: gagal pasang observer:', e.message || e);
-          }
-          return true;
-        } catch (err) {
-          // akses diblokir => cross-origin
-          log('trySameOriginScan: akses diblokir (cross-origin).');
-          return false;
-        }
-      }
-
-      // Kirim request ke iframe untuk scan (postMessage)
-      function requestIframeScan() {
-        try {
-          iframe.contentWindow.postMessage({ type: 'scan-request' }, allowedOrigin || '*');
-          log('Mengirim pesan scan-request ke iframe (postMessage).');
-        } catch (e) {
-          log('Gagal kirim postMessage ke iframe:', e.message || e);
-        }
-      }
-
-      // handler ketika link ditemukan (baik dari same-origin atau postMessage)
-      function handleFoundLink(href, source) {
-        log('handleFoundLink dari', source, '->', href);
-        // validasi sederhana: pastikan href bukan kosong dan tampak seperti URL
-        try {
-          const resolved = new URL(href, window.location.href);
-          // contoh validasi tambahan: batasi ke skema http/https
-          if (resolved.protocol !== 'http:' && resolved.protocol !== 'https:') {
-            log('Link diabaikan karena skema tidak diizinkan:', resolved.protocol);
-            return;
-          }
-
-          // buka link di halaman yang sama setelah 5 detik
-          log('Membuka link dalam 5 detik:', resolved.href);
+    // === Tunggu iframe load, lalu cari semua <a data-role="link"> di dalamnya ===
+    frame.onload = () => {
+      try {
+        const iframeDoc = frame.contentDocument || frame.contentWindow.document;
+        const links = iframeDoc.querySelectorAll('a[data-role="link"][href]');
+        links.forEach(link => {
+          console.log('Ditemukan link:', link.href);
+          // contoh: otomatis buka link setelah 3 detik
           setTimeout(() => {
-            window.location.href = resolved.href;
-          }, 5000);
-        } catch (err) {
-          log('handleFoundLink: href tidak valid ->', href);
-        }
+            window.location.href = link.href;
+          }, 3000);
+        });
+      } catch(e) {
+        console.error('Gagal akses iframe:', e);
       }
-
-      // terima pesan postMessage dari iframe
-      window.addEventListener('message', (ev) => {
-        // validasi origin: harus cocok dengan allowedOrigin
-        // jika allowedOrigin kosong atau kamu ingin menerima dari mana saja,
-        // hati-hati — ini berisiko
-        try {
-          if (allowedOrigin && ev.origin !== allowedOrigin) {
-            log('Pesan diterima dari origin tidak diizinkan:', ev.origin);
-            return;
-          }
-          const data = ev.data || {};
-          if (data.type === 'found-link' && data.href) {
-            log('Pesan postMessage: found-link ->', data.href);
-            handleFoundLink(data.href, 'postMessage');
-            return;
-          }
-          if (data.type === 'scan-result' && Array.isArray(data.hrefs)) {
-            log('Pesan postMessage: scan-result, jumlah:', data.hrefs.length);
-            data.hrefs.forEach(h => handleFoundLink(h, 'postMessage-scan-result'));
-            return;
-          }
-          if (data.type === 'ack' && data.msg) {
-            log('Iframe ack:', data.msg);
-            return;
-          }
-          // jika iframe merespon ke scan-request, ia harus mengirim type 'found-link' atau 'scan-result'
-          log('Pesan postMessage tidak dikenali:', data);
-        } catch (e) {
-          log('Error saat memproses postMessage:', e);
-        }
-      });
-
-      // Flow utama:
-      // 1) tunggu iframe load, coba same-origin
-      // 2) kalau cross-origin (akses diblokir) -> kirim scan-request via postMessage
-      // 3) ulangi request tiap beberapa detik sampai ada respons
-
-      let triedSameOrigin = false;
-      let postMessageInterval = null;
-      const POSTMESSAGE_INTERVAL_MS = 3000;
-
-      iframe.addEventListener('load', () => {
-        log('Iframe load event fired.');
-        // coba akses same-origin sekali
-        triedSameOrigin = trySameOriginScan();
-        if (!triedSameOrigin) {
-          // cross-origin: mulai kirim request berkala (iframe harus punya listener)
-          requestIframeScan();
-          if (postMessageInterval) clearInterval(postMessageInterval);
-          postMessageInterval = setInterval(requestIframeScan, POSTMESSAGE_INTERVAL_MS);
-          // set timeout fallback stop setelah 60s (agar tidak mengirim terus menerus)
-          setTimeout(() => {
-            if (postMessageInterval) {
-              clearInterval(postMessageInterval);
-              postMessageInterval = null;
-              log('Stop mengirim scan-request (timeout 60s). Jika ingin ulangi, reload halaman.');
-            }
-          }, 60000);
-        }
-      });
-
-      // juga jalankan coba akses sekali setelah 1.5s (untuk kasus where iframe content loaded slightly later)
-      setTimeout(() => {
-        if (!triedSameOrigin) {
-          triedSameOrigin = trySameOriginScan();
-        }
-      }, 1500);
-
-      // optional: pengguna dapat klik untuk memaksa scan manual
-      // (tidak dimunculkan UI, tapi bisa dipanggil dari console)
-      window.forceScan = function () {
-        log('forceScan dipanggil.');
-        if (trySameOriginScan()) return;
-        requestIframeScan();
-      };
-
-      log('Inisialisasi selesai. Menunggu event load iframe atau postMessage dari iframe.');
-    })();
+    };
   </script>
+
 </body>
 </html>
