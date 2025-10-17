@@ -2,51 +2,54 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>RTB Iframe + Auto Click Link</title>
+  <title>Auto Klik Vast Ad (Double Click After 7s)</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       height: 100%;
       overflow: hidden;
-      font-family: Arial, sans-serif;
-    }
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
     }
   </style>
 </head>
 <body>
-
-  <!-- Iframe untuk load DATA_PARAM -->
-  <iframe id="rtbFrame"></iframe>
-
+  <!-- Inject script iklan (versi baru) -->
   <script>
-    // === Inject iframe seperti sebelumnya ===
-    const DATA_PARAM = 'eyJpbXAiOlt7InNlY3VyZSI6MSwiZXh0Ijp7InRhZ19hYiI6ImEiLCJtdWx0aSI6ZmFsc2UsInVzZXJfa2V5d29yZHMiOiIiLCJpZCI6MTQ5OSwic3BhY2VpZCI6MTQ5OSwidHlwZSI6InBvcCIsImlkem9uZSI6bnVsbCwiYWRfdGFncyI6IkhhbGFtYW4lMkNJa2xhbiIsImxhYmVscyI6IjQsNSw2LDcsOCw5LDQ2LDQ3LDU0LDU1LDYxLDEwOSIsImFsbG93ZWRfbGFiZWxzIjoiIiwidGl0bGUiOiIiLCJzdWJpZCI6IjEwMjkxMzM3NjgiLCJyZWZyZXNoIjoxLCJ1dG0xIjoiIiwidXRtMiI6IiIsInV0bTQiOiIiLCJzcG90X2lkIjoxNDY1NjkzLCJtdWx0aXBsZSI6ZmFsc2UsImlzX2lmcmFtZSI6ZmFsc2V9LCJiYW5uZXIiOnsidyI6MzAwLCJoIjoyNTB9LCJtZXRyaWNzIjp7InRvcGljcyI6W119fV0sInNpdGUiOnsiaWQiOiIxNDY1NjkzIiwiY2F0IjpbIklBQjEiXSwicGFnZSI6Imh0dHBzOi8vdGVzdHRhZHphLmJsb2dzcG90LmNvbS8iLCJjdGlkIjoxfSwiZGV2aWNlIjp7IndyIjoxNTM2LCJoIjo4NjR9LCJmcF9wYXJhbXMiOnsicGx1Z2lucyI6WyJQREYgVmlld2VyIiwiQ2hyb21lIFBERiBWaWV3ZXIiXX0sInVzZXIiOnsiaWQiOiIzY2U1NGU0Mzk5Y2FiNzI1YzczYTc3ZjVjM2I1N2IzYSJ9LCJleHQiOnsicnQiOjE3NTkxMzUzMTY4NDZ9fQ==';
-    const endpoint = 'https://rtbbtr.com/get/?go=1&data=' + encodeURIComponent(DATA_PARAM);
-    const frame = document.getElementById('rtbFrame');
-    frame.src = endpoint;
-
-    // === Tunggu iframe load, lalu cari semua <a data-role="link"> di dalamnya ===
-    frame.onload = () => {
-      try {
-        const iframeDoc = frame.contentDocument || frame.contentWindow.document;
-        const links = iframeDoc.querySelectorAll('a[data-role="link"][href]');
-        links.forEach(link => {
-          console.log('Ditemukan link:', link.href);
-          // contoh: otomatis buka link setelah 3 detik
-          setTimeout(() => {
-            window.location.href = link.href;
-          }, 3000);
-        });
-      } catch(e) {
-        console.error('Gagal akses iframe:', e);
-      }
-    };
+    (function(ubto){
+      var d = document,
+          s = d.createElement('script'),
+          l = d.scripts[d.scripts.length - 1];
+      s.settings = ubto || {};
+      s.src = "//jumpyliterature.com/byXyV.sWd/GhlM0PYiWQcY/OeTmX9Su/ZuUql/kIPeTHYt2gN/z/kW1vMWD/IitkNLjBYp3qOuTzUZw/MWwD";
+      s.async = true;
+      s.referrerPolicy = 'no-referrer-when-downgrade';
+      l.parentNode.insertBefore(s, l);
+    })({})
   </script>
 
+  <!-- Observer: tunggu elemen muncul lalu dobel klik setelah 7 detik -->
+  <script>
+    const observer = new MutationObserver(() => {
+      const adLink = document.querySelector('a.vast-blocker[href]');
+      if (adLink) {
+        observer.disconnect(); // stop observasi
+
+        // Tunggu 7 detik sebelum melakukan double click
+        setTimeout(() => {
+          adLink.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+          setTimeout(() => {
+            adLink.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+            // buka di halaman yang sama
+            window.location.href = adLink.href;
+          }, 100); // jeda antar klik 100ms
+        }, 7000); // delay 7 detik
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  </script>
 </body>
 </html>
